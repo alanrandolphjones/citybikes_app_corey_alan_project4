@@ -56,4 +56,4 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 //Install buttons that allow user to find 2 things: 
 //  closest station with bicycles and closest station with empty slots
 
-//Install button that allows user to update location
+//Install button that allows user to update
