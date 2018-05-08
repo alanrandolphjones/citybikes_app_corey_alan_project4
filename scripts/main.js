@@ -47,6 +47,8 @@ app.loadMap = function () {
     
     })
 
+}
+
 $(function () {
     // 4. call load map when the document is ready
     app.loadMap();
