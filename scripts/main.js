@@ -28,16 +28,6 @@ function initMap() {
             infoWindow.setContent('Location found.');
             infoWindow.open(map);
             map.setCenter(pos);
-
-            var mapOptions = {
-                zoom: 17,
-                center: new google.maps.LatLng(pos.lat, pos.lng),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-            var map = new google.maps.Map(document.getElementById('map_canvas'),
-                mapOptions);
-            var GeoMarker = new GeolocationMarker(map);
-
         }, function () {
             handleLocationError(true, infoWindow, map.getCenter());
         });
@@ -64,4 +54,4 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 //Install buttons that allow user to find 2 things: 
 //  closest station with bicycles and closest station with empty slots
 
-//Install button that allows user to update location
+//Install button that allows user to update
