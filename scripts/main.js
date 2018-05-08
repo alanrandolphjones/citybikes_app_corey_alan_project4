@@ -1,8 +1,10 @@
 // Google Maps Javascript API key: AIzaSyBNBO04zSveUymLn4nS5LYIVCRPTc2zMLk
 
+
 console.log(`hi`);
 
 // COPY AND PASTED FROM GOOGLE MAPS ╲╱
+
 
 // Note: This example requires that you consent to location sharing when
 // prompted by your browser. If you see the error "The Geolocation service
