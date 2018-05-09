@@ -53,11 +53,6 @@ app.setLocations = (stations) => {
             freeBikes: location.free_bikes
         });
 
-<<<<<<< HEAD
-        app.markers.addListener(`click`, function() {
-            app.map.setZoom(19);
-            app.map.setCenter(marker.getPosition());
-=======
         const infowindow = new google.maps.InfoWindow({
             content: `<div>
                         <p><strong>Location:</strong> ${location.name}</p>
