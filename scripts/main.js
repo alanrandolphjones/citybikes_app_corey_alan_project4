@@ -94,9 +94,25 @@ app.getMap = function (lat1, lng1) {
     app.getLocations();
 }
 
+app.getNearestBike = () => {
+    $(`#getBike`).on(`click`, function(e) {
+        e.stopPropagation();
+        console.log(`getting bike`);
+    });
+}
+
+app.getNearestSlot = () => {
+    $(`#getSlot`).on(`click`, function(e) {
+        e.stopPropagation();
+        console.log(`getting slot`);
+    });
+}
+
 
 app.init = () => {
     app.events()
+    app.getNearestBike();
+    app.getNearestSlot();
 }
 
 $(function () {
