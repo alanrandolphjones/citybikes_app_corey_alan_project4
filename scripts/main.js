@@ -49,7 +49,9 @@ app.setLocations = (stations) => {
         app.markers = new google.maps.Marker({
             position: new google.maps.LatLng(location.latitude, location.longitude),
             map: app.map,
-            icon: 'your_location_marker.png'
+            icon: 'your_location_marker.png',
+            emptySlots: location.empty_slots,
+            freeBikes: location.free_bikes
         });
 
         console.log(app.markers);
