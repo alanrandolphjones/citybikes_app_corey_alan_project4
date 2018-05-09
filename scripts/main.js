@@ -44,7 +44,6 @@ app.getLocations = () => {
 }
 
 app.setLocations = (stations) => {
-    console.log(stations);
     stations.forEach((location) => {
         app.markers = new google.maps.Marker({
             position: new google.maps.LatLng(location.latitude, location.longitude),
@@ -54,9 +53,28 @@ app.setLocations = (stations) => {
             freeBikes: location.free_bikes
         });
 
+<<<<<<< HEAD
         app.markers.addListener(`click`, function() {
             app.map.setZoom(19);
             app.map.setCenter(marker.getPosition());
+=======
+        const infowindow = new google.maps.InfoWindow({
+            content: `<div>
+                        <p><strong>Location:</strong> ${location.name}</p>
+                        <p><strong>Available Bikes:</strong> ${location.free_bikes}</p>
+                        <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
+                    </div>`
+        })
+         
+
+        console.log(infowindow.content);
+        
+
+        app.markers.addListener('click', function () {
+            app.map.setZoom(17);
+            app.map.setCenter(this.getPosition());
+            infowindow.open(app.map, app.markers)
+>>>>>>> 1e3ba0c4a9e967fc8e83246b7dddfd1aee7d2fa1
         });
     });
 }
