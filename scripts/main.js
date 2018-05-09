@@ -73,8 +73,12 @@ app.setLocations = (stations) => {
         app.markers.addListener('click', function () {
             app.map.setZoom(17);
             app.map.setCenter(this.getPosition());
+<<<<<<< HEAD
             infowindow.open(app.map, app.markers)
 >>>>>>> 1e3ba0c4a9e967fc8e83246b7dddfd1aee7d2fa1
+=======
+            infowindow.open(app.map, this)
+>>>>>>> 6066905f9b983b962678764171976d90f8cf48a7
         });
     });
 }
