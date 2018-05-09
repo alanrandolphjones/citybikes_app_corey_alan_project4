@@ -45,6 +45,15 @@ app.getLocations = () => {
 
 app.setLocations = (stations) => {
     console.log(stations);
+    stations.forEach((location) => {
+        app.markers = new google.maps.Marker({
+            position: new google.maps.LatLng(location.latitude, location.longitude),
+            map: app.map,
+            icon: 'your_location_marker.png'
+        });
+
+        console.log(app.markers);
+    });
 }
 
 app.getMarkers = (lat1, lng1) => {
@@ -53,7 +62,7 @@ app.getMarkers = (lat1, lng1) => {
         position: new google.maps.LatLng(lat1, lng1),
         map: app.map, // notice how we pass it the map we made earlier? This is how it knows which map to put the marker on
         icon: 'your_location_marker.png'
-    })
+    });
 }
 
 app.getMap = function (lat1, lng1) {
@@ -66,11 +75,11 @@ app.getMap = function (lat1, lng1) {
     const $mapDiv = $('#map')[0]
 
     app.map = new google.maps.Map($mapDiv, mapOptions);
+    app.getLocations();
 }
 
 
 app.init = () => {
-    app.getLocations();
     app.events()
 }
 
