@@ -50,7 +50,7 @@ app.setLocations = (stations) => {
         const marker = new google.maps.Marker({
             position: new google.maps.LatLng(location.latitude, location.longitude),
             map: app.map,
-            icon: 'your_location_marker.png',
+            icon: 'bicycle_marker.png',
             emptySlots: location.empty_slots,
             freeBikes: location.free_bikes,
             infowindow: new google.maps.InfoWindow({
