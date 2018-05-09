@@ -27,6 +27,25 @@ app.events = () => {
 
 }
 
+const cityBikesURL = 'http://api.citybik.es/v2/networks/bixi-toronto';
+
+app.getLocations = () => {
+    $.ajax({
+        url: cityBikesURL,
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            'fields': 'stations'
+        }
+    }).then((res) => {
+        const stations = res.network.stations;
+        app.setLocations(stations);
+    });
+}
+
+app.setLocations = (stations) => {
+    console.log(stations);
+}
 
 app.getMarkers = (lat1, lng1) => {
 
@@ -51,7 +70,7 @@ app.getMap = function (lat1, lng1) {
 
 
 app.init = () => {
-
+    app.getLocations();
     app.events()
 }
 
