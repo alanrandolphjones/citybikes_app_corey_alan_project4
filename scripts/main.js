@@ -54,7 +54,10 @@ app.setLocations = (stations) => {
             freeBikes: location.free_bikes
         });
 
-        console.log(app.markers);
+        app.markers.addListener(`click`, function() {
+            app.map.setZoom(19);
+            app.map.setCenter(marker.getPosition());
+        });
     });
 }
 
