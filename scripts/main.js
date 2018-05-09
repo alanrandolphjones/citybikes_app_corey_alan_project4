@@ -1,5 +1,7 @@
 // Google Maps Javascript API key: AIzaSyBNBO04zSveUymLn4nS5LYIVCRPTc2zMLk
+const availableBikes = [];
 
+const availableSlots = [];
 
 const app = {};
 
@@ -52,16 +54,37 @@ app.setLocations = (stations) => {
             map: app.map,
             icon: 'bicycle_marker.png',
             emptySlots: location.empty_slots,
-            freeBikes: location.free_bikes,
-            infowindow: new google.maps.InfoWindow({
-                content: `<div>
-                        <p><strong>Location:</strong> ${location.name}</p>
-                        <p><strong>Available Bikes:</strong> ${location.free_bikes}</p>
-                        <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
-                    </div>`
-            })
+            freeBikes: location.free_bikes
+
         });
+
+        if (marker.emptySlots > 0) {
+            availableSlots.push(marker);
+        }
+        if (marker.freeBikes > 0) {
+            availableBikes.push(marker);
+        }
+
+        marker.distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(marker.position, app.home.position)
+
+        marker.infowindow = new google.maps.InfoWindow({
+            content: `<div>
+                            <p><strong>Location:</strong> ${location.name}</p>
+                            <p><strong>Available Bikes:</strong> ${location.free_bikes}</p>
+                            <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
+                            <p><strong>Distance Between:</strong> ${marker.distanceBetween}</p></p>
+                        </div>`
+                })
+
+        console.log(marker.distanceBetween);
+        
+
+
         app.markers.push(marker)
+
+        
+
+        
 
         marker.addListener('click', function () {
             app.markers.forEach((marker) => marker.infowindow.close())
@@ -99,6 +122,7 @@ app.getNearestBike = () => {
         e.stopPropagation();
         console.log(`getting bike`);
     });
+
 }
 
 app.getNearestSlot = () => {
