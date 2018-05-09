@@ -65,10 +65,8 @@ app.setLocations = (stations) => {
                         <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
                     </div>`
         })
-         
 
         console.log(infowindow.content);
-        
 
         app.markers.addListener('click', function () {
             app.map.setZoom(17);
