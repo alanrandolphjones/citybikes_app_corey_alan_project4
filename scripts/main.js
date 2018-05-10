@@ -194,6 +194,19 @@ app.getNearestSlot = (homeLat, homeLng) => {
 
 app.calcRoute = (homeLat, homeLng, destLat, destLng, mode) => {
     console.log(`You're at ${homeLat} ${homeLng}. You're going to ${destLat} ${destLng} by ${mode}.`);
+    const yourStart = new google.maps.LatLng(homeLat, homeLng);
+    const yourEnd = new google.maps.LatLng(destLat, destLng);
+    const yourMode = mode;
+    const request = {
+        origin: yourStart,
+        destination: yourEnd,
+        travelMode: yourMode
+    }
+    app.directionsService.route(request, function(response, status) {
+        if (status === 'OK') {
+            app.directionsDisplay.setDirections(response);
+        }
+    });
 }
 
 
