@@ -112,11 +112,14 @@ app.getMap = function (lat1, lng1) {
     app.map = new google.maps.Map($mapDiv, mapOptions);
     app.directionsDisplay.setMap(app.map);
     app.getLocations();
-    app.getNearestBike();
-    app.getNearestSlot();
+    app.getNearestBike(mapOptions.center.lat, mapOptions.center.lng);
+    app.getNearestSlot(mapOptions.center.lat, mapOptions.center.lng);
 }
 
-app.getNearestBike = () => {
+app.getNearestBike = (homeLat, homeLng) => {
+    const myLat = homeLat;
+    const myLng = homeLng;
+
     $(`#getBike`).on(`click`, function(e) {
         e.stopPropagation();
         const distances = app.availableBikes.map(function (item) {
@@ -144,12 +147,15 @@ app.getNearestBike = () => {
 
         // console.log(closestLocation.lat, closestLocation.lng);
 
-        app.calcRoute(closestLocation.lat, closestLocation.lng);
+        app.calcRoute(myLat, myLng, closestLocation.lat, closestLocation.lng, 'WALKING');
     });
 
 }
 
-app.getNearestSlot = () => {
+app.getNearestSlot = (homeLat, homeLng) => {
+    const myLat = homeLat;
+    const myLng = homeLng;
+
     $(`#getSlot`).on(`click`, function(e) {
         e.stopPropagation();
 
@@ -182,12 +188,12 @@ app.getNearestSlot = () => {
 
         // console.log(closestLocation.lat, closestLocation.lng);
 
-        app.calcRoute(closestLocation.lat, closestLocation.lng);
+        app.calcRoute(myLat, myLng, closestLocation.lat, closestLocation.lng, 'BICYCLING');
     });
 }
 
-app.calcRoute = (destLat, destLng) => {
-
+app.calcRoute = (homeLat, homeLng, destLat, destLng, mode) => {
+    console.log(`You're at ${homeLat} ${homeLng}. You're going to ${destLat} ${destLng} by ${mode}.`);
 }
 
 
