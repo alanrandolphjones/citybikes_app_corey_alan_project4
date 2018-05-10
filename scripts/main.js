@@ -7,105 +7,105 @@ app.availableBikes = [];
 app.availableSlots = [];
 
 app.events = () => {
-
     const locationPromise = new Promise((resolve, reject) => {
-        navigator.geolocation.watchPosition(function (pos) {
+        navigator.geolocation.watchPosition(function(pos) {
+        resolve(pos);
+        });
+    });
 
-            resolve(pos);
+    locationPromise.then(pos => {
+        const lat1 = pos.coords.latitude;
 
-        })
-    })
+        const lng1 = pos.coords.longitude;
 
-    locationPromise.then((pos) => {
+        app.getMap(lat1, lng1);
 
-        const lat1 = pos.coords.latitude
+        app.getMarkers(lat1, lng1);
+    });
+};
 
-        const lng1 = pos.coords.longitude
-
-        app.getMap(lat1, lng1)
-
-        app.getMarkers(lat1, lng1)
-
-    })
-
-}
-
-const cityBikesURL = 'http://api.citybik.es/v2/networks/bixi-toronto';
+const cityBikesURL = "http://api.citybik.es/v2/networks/bixi-toronto";
 
 app.getLocations = () => {
     $.ajax({
         url: cityBikesURL,
-        method: 'GET',
-        dataType: 'json',
+        method: "GET",
+        dataType: "json",
         data: {
-            'fields': 'stations'
+        fields: "stations"
         }
-    }).then((res) => {
+    }).then(res => {
         const stations = res.network.stations;
         app.setLocations(stations);
     });
-}
+};
 
 app.markers = [];
 
-app.setLocations = (stations) => {
-    stations.forEach((location) => {
-        const marker = new google.maps.Marker({
-            position: new google.maps.LatLng(location.latitude, location.longitude),
-            map: app.map,
-            icon: 'bicycle_marker.png',
-            emptySlots: location.empty_slots,
-            freeBikes: location.free_bikes
+app.setLocations = stations => {
+    stations.forEach(location => {
+    const marker = new google.maps.Marker({
+        position: new google.maps.LatLng(location.latitude, location.longitude),
+        map: app.map,
+        icon: "bicycle_marker.png",
+        emptySlots: location.empty_slots,
+        freeBikes: location.free_bikes
+    });
 
-        });
+    if (marker.emptySlots > 0) {
+        app.availableSlots.push(marker);
+    }
+    if (marker.freeBikes > 0) {
+        app.availableBikes.push(marker);
+    }
 
-        if (marker.emptySlots > 0) {
-            app.availableSlots.push(marker);
-        }
-        if (marker.freeBikes > 0) {
-            app.availableBikes.push(marker);
-        }
+    marker.distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(
+        marker.position,
+        app.home.position
+    );
 
-        marker.distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(marker.position, app.home.position)
-
-        marker.infowindow = new google.maps.InfoWindow({
-            content: `<div>
+    marker.infowindow = new google.maps.InfoWindow({
+        content: `<div>
                             <p><strong>Location:</strong> ${location.name}</p>
-                            <p><strong>Available Bikes:</strong> ${location.free_bikes}</p>
-                            <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
-                            <p><strong>Distance Between:</strong> ${Math.round(marker.distanceBetween)} metres</p></p>
+                            <p><strong>Available Bikes:</strong> ${
+                                location.free_bikes
+                            }</p>
+                            <p><strong>Empty Slots:</strong> ${
+                                location.empty_slots
+                            }</p>
+                            <p><strong>Distance Between:</strong> ${Math.round(
+                                marker.distanceBetween
+                            )} metres</p></p>
                         </div>`
-                })        
+    });
 
-        app.markers.push(marker)
+    app.markers.push(marker);
 
-        marker.addListener('click', function () {
-            app.markers.forEach((marker) => marker.infowindow.close())
+        marker.addListener("click", function() {
+            app.markers.forEach(marker => marker.infowindow.close());
             app.map.setZoom(17);
             app.map.setCenter(this.getPosition());
             this.infowindow.open(app.map, this);
         });
     });
-}
+};
 
 app.getMarkers = (lat1, lng1) => {
-
     app.home = new google.maps.Marker({
-        position: new google.maps.LatLng(lat1, lng1),
-        map: app.map, // notice how we pass it the map we made earlier? This is how it knows which map to put the marker on
-        icon: 'your_location_marker.png'
+    position: new google.maps.LatLng(lat1, lng1),
+    map: app.map, // notice how we pass it the map we made earlier? This is how it knows which map to put the marker on
+    icon: "your_location_marker.png"
     });
-}
+};
 
-app.getMap = function (lat1, lng1) {
+app.getMap = function(lat1, lng1) {
     // Call current location, then input the position into a map object
     const mapOptions = {
         center: { lat: lat1, lng: lng1 },
         zoom: 17
-    }
+    };
 
-    const $mapDiv = $('#map')[0]
-
+    const $mapDiv = $("#map")[0];
 
     app.directionsService = new google.maps.DirectionsService();
     app.directionsDisplay = new google.maps.DirectionsRenderer();
@@ -113,105 +113,86 @@ app.getMap = function (lat1, lng1) {
     app.directionsDisplay.setMap(app.map);
     app.getLocations();
     app.getNearestBike(mapOptions.center.lat, mapOptions.center.lng);
-    app.getNearestSlot(mapOptions.center.lat, mapOptions.center.lng);
-}
+};
 
 app.getNearestBike = (homeLat, homeLng) => {
     const myLat = homeLat;
     const myLng = homeLng;
 
-    $(`#getBike`).on(`click`, function(e) {
-        e.stopPropagation();
-        const distances = app.availableBikes.map(function (item) {
-            return item.distanceBetween
-        })
+    $(`button`).on(`click`, function(e) {
+    e.stopPropagation();
 
-        app.markers.forEach((marker) => marker.infowindow.close())
+    const id = this.id;
 
-        const shortestDistance = Math.min(...distances)
+    let travelMode = "";
 
-        let closestLocation = {};
+    const distances = [];
 
-        for (let i = 0; i < app.markers.length; i++) {
-            if (app.markers[i].distanceBetween === shortestDistance) {
-            // console.log();
+    if (id === "getBike") {
+        travelMode = "WALKING";
+        app.availableBikes.map(function(item) {
+            distances.push(item.distanceBetween);
+        });
+        console.log(distances);
+    } else {
+        travelMode = "BICYCLING";
+        app.availableSlots.map(function(item) {
+        distances.push(item.distanceBetween);
+        });
+    }
 
-                app.map.setCenter(app.markers[i].getPosition());
-                app.markers[i].infowindow.open(app.map, app.markers[i]);
-                closestLocation = app.markers[i];
-            }
+    app.markers.forEach(marker => marker.infowindow.close());
+
+    const shortestDistance = Math.min(...distances);
+
+    let closestLocation = {};
+
+    for (let i = 0; i < app.markers.length; i++) {
+        if (app.markers[i].distanceBetween === shortestDistance) {
+        // console.log();
+
+        app.map.setCenter(app.markers[i].getPosition());
+        app.markers[i].infowindow.open(app.map, app.markers[i]);
+        closestLocation = app.markers[i];
         }
-        closestLocation.lat = closestLocation.getPosition().lat();
+    }
+    closestLocation.lat = closestLocation.getPosition().lat();
 
-        closestLocation.lng = closestLocation.getPosition().lng();
+    closestLocation.lng = closestLocation.getPosition().lng();
 
-        // console.log(closestLocation.lat, closestLocation.lng);
+    // console.log(closestLocation.lat, closestLocation.lng);
 
-        app.calcRoute(myLat, myLng, closestLocation.lat, closestLocation.lng, 'WALKING');
+    app.calcRoute(
+        myLat,
+        myLng,
+        closestLocation.lat,
+        closestLocation.lng,
+        travelMode
+    );
     });
-
-}
-
-app.getNearestSlot = (homeLat, homeLng) => {
-    const myLat = homeLat;
-    const myLng = homeLng;
-
-    $(`#getSlot`).on(`click`, function(e) {
-        e.stopPropagation();
-
-        app.markers.forEach((marker) => marker.infowindow.close())
-        
-        const distances = app.availableSlots.map(function(item) {
-            return item.distanceBetween
-        })
-
-        const shortestDistance = Math.min(...distances)
-
-        let closestLocation = {};
-
-        for (let i = 0; i < app.markers.length; i++) {
-            if (app.markers[i].distanceBetween === shortestDistance) {
-                // console.log();
-                
-                app.map.setCenter(app.markers[i].getPosition());
-                app.markers[i].infowindow.open(app.map, app.markers[i]);
-                closestLocation = app.markers[i];
-            }
-        }
-        closestLocation.lat = closestLocation
-            .getPosition()
-            .lat();
-
-        closestLocation.lng = closestLocation
-            .getPosition()
-            .lng();
-
-        // console.log(closestLocation.lat, closestLocation.lng);
-
-        app.calcRoute(myLat, myLng, closestLocation.lat, closestLocation.lng, 'BICYCLING');
-    });
-}
+};
 
 app.calcRoute = (homeLat, homeLng, destLat, destLng, mode) => {
-    console.log(`You're at ${homeLat} ${homeLng}. You're going to ${destLat} ${destLng} by ${mode}.`);
+    console.log(
+    `You're at ${homeLat} ${homeLng}. You're going to ${destLat} ${destLng} by ${mode}.`
+    );
     const yourStart = new google.maps.LatLng(homeLat, homeLng);
     const yourEnd = new google.maps.LatLng(destLat, destLng);
     const yourMode = mode;
     const request = {
-        origin: yourStart,
-        destination: yourEnd,
-        travelMode: yourMode
-    }
+    origin: yourStart,
+    destination: yourEnd,
+    travelMode: yourMode
+    };
     app.directionsService.route(request, function(response, status) {
-        if (status === 'OK') {
-            app.directionsDisplay.setDirections(response);
-        }
+    if (status === "OK") {
+        app.directionsDisplay.setDirections(response);
+    }
     });
-}
-
+};
 
 app.init = () => {
-    app.events()
-}
+    app.events();
+};
 
 $(app.init);
