@@ -106,8 +106,14 @@ app.getMap = function (lat1, lng1) {
 
     const $mapDiv = $('#map')[0]
 
+
+    app.directionsService = new google.maps.DirectionsService();
+    app.directionsDisplay = new google.maps.DirectionsRenderer();
     app.map = new google.maps.Map($mapDiv, mapOptions);
+    app.directionsDisplay.setMap(app.map);
     app.getLocations();
+    app.getNearestBike();
+    app.getNearestSlot();
 }
 
 app.getNearestBike = () => {
@@ -121,13 +127,24 @@ app.getNearestBike = () => {
 
         const shortestDistance = Math.min(...distances)
 
+        let closestLocation = {};
+
         for (let i = 0; i < app.markers.length; i++) {
             if (app.markers[i].distanceBetween === shortestDistance) {
+            // console.log();
 
                 app.map.setCenter(app.markers[i].getPosition());
                 app.markers[i].infowindow.open(app.map, app.markers[i]);
+                closestLocation = app.markers[i];
             }
         }
+        closestLocation.lat = closestLocation.getPosition().lat();
+
+        closestLocation.lng = closestLocation.getPosition().lng();
+
+        // console.log(closestLocation.lat, closestLocation.lng);
+
+        app.calcRoute(closestLocation.lat, closestLocation.lng);
     });
 
 }
@@ -144,26 +161,38 @@ app.getNearestSlot = () => {
 
         const shortestDistance = Math.min(...distances)
 
+        let closestLocation = {};
+
         for (let i = 0; i < app.markers.length; i++) {
             if (app.markers[i].distanceBetween === shortestDistance) {
                 // console.log();
                 
                 app.map.setCenter(app.markers[i].getPosition());
                 app.markers[i].infowindow.open(app.map, app.markers[i]);
+                closestLocation = app.markers[i];
             }
         }
-        
+        closestLocation.lat = closestLocation
+            .getPosition()
+            .lat();
+
+        closestLocation.lng = closestLocation
+            .getPosition()
+            .lng();
+
+        // console.log(closestLocation.lat, closestLocation.lng);
+
+        app.calcRoute(closestLocation.lat, closestLocation.lng);
     });
+}
+
+app.calcRoute = (destLat, destLng) => {
+
 }
 
 
 app.init = () => {
     app.events()
-    app.getNearestBike();
-    app.getNearestSlot();
 }
 
-$(function () {
-    // 4. call load map when the document is ready
-    app.init()
-});
+$(app.init);
