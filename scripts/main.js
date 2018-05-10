@@ -65,18 +65,18 @@ app.setLocations = stations => {
     );
 
     marker.infowindow = new google.maps.InfoWindow({
-        content: `<div>
-                            <p><strong>Location:</strong> ${location.name}</p>
-                            <p><strong>Available Bikes:</strong> ${
-                                location.free_bikes
-                            }</p>
-                            <p><strong>Empty Slots:</strong> ${
-                                location.empty_slots
-                            }</p>
-                            <p><strong>Distance Between:</strong> ${Math.round(
-                                marker.distanceBetween
-                            )} metres</p></p>
-                        </div>`
+        content:    `<div class="info-window">
+                        <p><strong>Location:</strong> ${location.name}</p>
+                        <p><strong>Available Bikes:</strong> ${
+                            location.free_bikes
+                        }</p>
+                        <p><strong>Empty Slots:</strong> ${
+                            location.empty_slots
+                        }</p>
+                        <p><strong>Distance Between:</strong> ${Math.round(
+                            marker.distanceBetween
+                        )} metres</p></p>
+                    </div>`
     });
 
     app.markers.push(marker);
