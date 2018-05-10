@@ -15,7 +15,7 @@ html {
     display: grid;
     grid-template-rows: 7.5vh 92.5vh;
     grid-template-columns: repeat(2, 1fr);
-    background: #2a1d32;
+    background: #006747;
 }
 
 .wrapper__button button {
