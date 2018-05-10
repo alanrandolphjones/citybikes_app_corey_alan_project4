@@ -1,9 +1,10 @@
 // Google Maps Javascript API key: AIzaSyBNBO04zSveUymLn4nS5LYIVCRPTc2zMLk
-const availableBikes = [];
-
-const availableSlots = [];
 
 const app = {};
+
+app.availableBikes = [];
+
+app.availableSlots = [];
 
 app.events = () => {
 
@@ -59,10 +60,10 @@ app.setLocations = (stations) => {
         });
 
         if (marker.emptySlots > 0) {
-            availableSlots.push(marker);
+            app.availableSlots.push(marker);
         }
         if (marker.freeBikes > 0) {
-            availableBikes.push(marker);
+            app.availableBikes.push(marker);
         }
 
         marker.distanceBetween = google.maps.geometry.spherical.computeDistanceBetween(marker.position, app.home.position)
@@ -72,19 +73,11 @@ app.setLocations = (stations) => {
                             <p><strong>Location:</strong> ${location.name}</p>
                             <p><strong>Available Bikes:</strong> ${location.free_bikes}</p>
                             <p><strong>Empty Slots:</strong> ${location.empty_slots}</p>
-                            <p><strong>Distance Between:</strong> ${marker.distanceBetween}</p></p>
+                            <p><strong>Distance Between:</strong> ${Math.round(marker.distanceBetween)} metres</p></p>
                         </div>`
-                })
-
-        console.log(marker.distanceBetween);
-        
-
+                })        
 
         app.markers.push(marker)
-
-        
-
-        
 
         marker.addListener('click', function () {
             app.markers.forEach((marker) => marker.infowindow.close())
@@ -120,7 +113,21 @@ app.getMap = function (lat1, lng1) {
 app.getNearestBike = () => {
     $(`#getBike`).on(`click`, function(e) {
         e.stopPropagation();
-        console.log(`getting bike`);
+        const distances = app.availableBikes.map(function (item) {
+            return item.distanceBetween
+        })
+
+        app.markers.forEach((marker) => marker.infowindow.close())
+
+        const shortestDistance = Math.min(...distances)
+
+        for (let i = 0; i < app.markers.length; i++) {
+            if (app.markers[i].distanceBetween === shortestDistance) {
+
+                app.map.setCenter(app.markers[i].getPosition());
+                app.markers[i].infowindow.open(app.map, app.markers[i]);
+            }
+        }
     });
 
 }
@@ -128,7 +135,24 @@ app.getNearestBike = () => {
 app.getNearestSlot = () => {
     $(`#getSlot`).on(`click`, function(e) {
         e.stopPropagation();
-        console.log(`getting slot`);
+
+        app.markers.forEach((marker) => marker.infowindow.close())
+        
+        const distances = app.availableSlots.map(function(item) {
+            return item.distanceBetween
+        })
+
+        const shortestDistance = Math.min(...distances)
+
+        for (let i = 0; i < app.markers.length; i++) {
+            if (app.markers[i].distanceBetween === shortestDistance) {
+                // console.log();
+                
+                app.map.setCenter(app.markers[i].getPosition());
+                app.markers[i].infowindow.open(app.map, app.markers[i]);
+            }
+        }
+        
     });
 }
 
