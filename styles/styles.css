@@ -27,17 +27,21 @@ html {
     color: #e2e2e2;
     border: 0;
     transition: all 0.5s ease;
-    box-shadow: 3px 3px 5px 6px #232323;
     border-radius: 6px;
 }
 
 .wrapper__button button:hover {
     background: #60061e;
-    box-shadow: none;
 }
 
 .wrapper__map {
     grid-column: 1 / span 2;
     position: relative;
     z-index: 1;
+}
+
+.info-window {
+    background: #006747;
+    color: #e2e2e2;
+    width: 15%;
 }
