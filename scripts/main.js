@@ -49,7 +49,7 @@ app.getLocations = (cityName) => {
         app.home.infowindow.open(app.map, app.home)
     }
 
-    const cityBikesURL = `http://api.citybik.es/v2/networks/${app.networkName}`;
+    const cityBikesURL = `https://api.citybik.es/v2/networks/${app.networkName}`;
 
     $.ajax({
         url: cityBikesURL,
