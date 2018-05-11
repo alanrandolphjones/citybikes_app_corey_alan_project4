@@ -26,7 +26,31 @@ app.events = () => {
 
 const cityBikesURL = "http://api.citybik.es/v2/networks/bixi-toronto";
 
-app.getLocations = () => {
+app.getLocations = (cityName) => {
+    if (cityName === "Toronto") {
+        app.networkName = "bixi-toronto";
+    }
+    else if (cityName === "Ottawa") {
+        app.networkName = "velogo";
+    }
+    else if (cityName === "Montréal") {
+        app.networkName = "bixi-montreal";
+    }
+    else if (cityName === "Vancouver") {
+        app.networkName = "mobibikes";
+    }
+    else if (cityName === "Victoria") {
+        app.networkName = "nextbike-victoria";
+    }
+    else if (cityName === "Hamilton") {
+        app.networkName = "sobi-hamilton";
+    }
+    else {
+        app.home.infowindow.open(app.map, app.home)
+    }
+
+    const cityBikesURL = `http://api.citybik.es/v2/networks/${app.networkName}`;
+
     $.ajax({
         url: cityBikesURL,
         method: "GET",
@@ -94,7 +118,12 @@ app.getMarkers = (lat1, lng1) => {
     app.home = new google.maps.Marker({
     position: new google.maps.LatLng(lat1, lng1),
     map: app.map, // notice how we pass it the map we made earlier? This is how it knows which map to put the marker on
-    icon: "your_location_marker.png"
+    icon: "your_location_marker.png",
+    infowindow: new google.maps.InfoWindow({
+        content: `<div>
+                    <p>We cannot find a bikeshare network in your location</p>
+                </div>`
+        })
     });
 };
 
@@ -109,11 +138,50 @@ app.getMap = function(lat1, lng1) {
 
     app.directionsService = new google.maps.DirectionsService();
     app.directionsDisplay = new google.maps.DirectionsRenderer();
+
+    app.geocoder = new google.maps.Geocoder;
+
     app.map = new google.maps.Map($mapDiv, mapOptions);
+
+    app.geocodeLatLng(app.geocoder, app.map, mapOptions.center.lat, mapOptions.center.lng)
+
     app.directionsDisplay.setMap(app.map);
-    app.getLocations();
     app.getNearestBike(mapOptions.center.lat, mapOptions.center.lng);
 };
+
+app.findCityNameLoop = (components) => {
+    for (let i = 0; i < components.length; i++) {
+
+        const types = components[i].types
+
+        for (let j = 0; j < types.length; j++) {
+            if (types[j] === "locality") {
+                app.cityName = components[i].long_name
+                app.getLocations(app.cityName)
+                break;
+            }
+        }
+    }
+}
+
+//add to main
+app.geocodeLatLng = (geocoder, map, latGeo, lngGeo) => {
+    var latlng = { lat: latGeo, lng: lngGeo };
+    app.geocoder.geocode({ 'location': latlng }, function (results, status) {
+        console.log(results);
+
+
+        const components = results[0].address_components
+        console.log(components);
+
+        app.findCityNameLoop(components)
+
+    })
+    // .asPromise().then(response => {
+    //     console.log(response);
+
+    // });
+}
 
 app.getNearestBike = (homeLat, homeLng) => {
     const myLat = homeLat;
