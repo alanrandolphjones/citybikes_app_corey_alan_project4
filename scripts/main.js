@@ -37,8 +37,6 @@ const cityBikesURL = "http://api.citybik.es/v2/networks/bixi-toronto";
 
 app.getLocations = (cityName) => {
 
-    console.log(cityName);
-
     for (let city in app.cities) {
         if (cityName === city) {
             app.networkName = app.cities[city]
@@ -97,7 +95,7 @@ app.setLocations = stations => {
                         <p><strong>Empty Slots:</strong> ${
                             location.empty_slots
                         }</p>
-                        <p><strong>Distance Between:</strong> ${Math.round(
+                        <p><strong>Distance:</strong> ${Math.round(
                             marker.distanceBetween
                         )} metres</p></p>
                     </div>`
@@ -193,7 +191,7 @@ app.getNearestBike = (homeLat, homeLng) => {
         app.availableBikes.map(function(item) {
             distances.push(item.distanceBetween);
         });
-        console.log(distances);
+
     } else {
         travelMode = "BICYCLING";
         app.availableSlots.map(function(item) {
@@ -209,7 +207,6 @@ app.getNearestBike = (homeLat, homeLng) => {
 
     for (let i = 0; i < app.markers.length; i++) {
         if (app.markers[i].distanceBetween === shortestDistance) {
-        // console.log();
 
         app.map.setCenter(app.markers[i].getPosition());
         app.markers[i].infowindow.open(app.map, app.markers[i]);
@@ -220,7 +217,6 @@ app.getNearestBike = (homeLat, homeLng) => {
 
     closestLocation.lng = closestLocation.getPosition().lng();
 
-    // console.log(closestLocation.lat, closestLocation.lng);
 
     app.calcRoute(
         myLat,
@@ -233,9 +229,7 @@ app.getNearestBike = (homeLat, homeLng) => {
 };
 
 app.calcRoute = (homeLat, homeLng, destLat, destLng, mode) => {
-    console.log(
-    `You're at ${homeLat} ${homeLng}. You're going to ${destLat} ${destLng} by ${mode}.`
-    );
+
     const yourStart = new google.maps.LatLng(homeLat, homeLng);
     const yourEnd = new google.maps.LatLng(destLat, destLng);
     const yourMode = mode;
